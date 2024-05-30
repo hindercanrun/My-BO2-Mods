@@ -10,21 +10,21 @@
 skipto_house()
 {
 	skipto_setup();
-	skipto_teleport_players("player_skipto_house");
+	skipto_teleport_players( "player_skipto_house" );
 }
 
 panama_wind_settings()
 {
-	SetSavedDvar( "wind_global_vector", "246.366 0 0" );						// change "1 0 0" to your wind vector
-	SetSavedDvar( "wind_global_low_altitude", 0 );						// change 0 to your wind's lower bound
-	SetSavedDvar( "wind_global_hi_altitude", 5000 );					// change 10000 to your wind's upper bound
-	SetSavedDvar( "wind_global_low_strength_percent", 0.5 );	// change 0.5 to your desired wind strength percentage	
+	SetSavedDvar( "wind_global_vector", "246.366 0 0" ); // Change "1 0 0" to your wind vector
+	SetSavedDvar( "wind_global_low_altitude", 0 ); // Change 0 to your wind's lower bound
+	SetSavedDvar( "wind_global_hi_altitude", 5000 ); // Change 10000 to your wind's upper bound
+	SetSavedDvar( "wind_global_low_strength_percent", 0.5 ); // Change 0.5 to your desired wind strength percentage	
 }
 
 main()
 {
 	level thread house_ik_headtracking_limits();
-	level thread blackscreen( 0, 2, 0 );
+	level thread blackscreen( 0, 3, 0 );
 	level thread maps\createart\panama_art::house();
 
 	level.player_interactive_model = "c_usa_woods_panama_casual_viewbody";
@@ -41,7 +41,7 @@ main()
 
 	player_exits_hummer();
 
-	// fail if player is dumb and wanders off in the streets
+	// Fail if player is dumb and wanders off in the streets
 	level.player thread street_fail_condition();
 
 	house_events();
@@ -274,7 +274,7 @@ player_exits_hummer()
 
 	scene_wait( "player_exits_hummer" );
 
-	level thread toggle_hat_overlay();
+//T6todo	level thread toggle_hat_overlay();
 
 	vh_player_hummer Detach( "veh_iw_hummer_win_xcam", "front_door_left_jnt" );
 	turn_off_reflection_cam( "extra_cam_humvee" );

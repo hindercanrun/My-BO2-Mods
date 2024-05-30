@@ -1,15 +1,17 @@
-/*
+/****************************************************************************
 
-	PUT NEED TO KNOW LEVEL INFO UP HERE
+Level:		Suffer With Me
+Location:	Fort Clayton, Panama, North America
+Campaign:	1980s
 
-*/
+*****************************************************************************/
 
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\panama_utility;
 
 main()
-{	
+{
 	// This MUST be first for CreateFX!	
 	maps\panama_fx::main();
 
@@ -17,32 +19,36 @@ main()
 	level_init_flags();
 	setup_skiptos();
 
-	// overrides default introscreen function
+	// Overrides the default introscreen function
 	level.custom_introscreen = ::panama_custom_introscreen;
 
-	//maps\_hiding_door::door_main();  // run this to enable the hiding_door scripts
-	//maps\_hiding_door::window_main();  // run this to enable the hiding_window scripts
+//T6todo	maps\_hiding_door::door_main(); // run this to enable the hiding_door scripts
+//T6todo	maps\_hiding_door::window_main(); // run this to enable the hiding_window scripts
 
 	maps\_load::main();
 	maps\panama_amb::main();
 	maps\panama_anim::main();
 
+	// To run the stealth script on the players
 	OnPlayerConnect_Callback( ::on_player_connect );
 
 	// panama fog and post effects gsc
 	maps\createart\panama_art::main();
 
-//	maps\_flare::main(); // start the _flare scripts	
+//T6todo	maps\_flare::main(); // start the _flare scripts
 	maps\_stealth_logic::stealth_init();
 	maps\_stealth_behavior::main();
 	maps\_swimming::main(); // enable swimming feature
 
-//	animscripts\dog_init::initDogAnimations();
+//T6todo	animscripts\dog_init::initDogAnimations();
+//T6todo	maps\_digbats::melee_digbat_init();
+//T6todo	maps\_drones::init();
 
 	//inits vehicle lights
 	level._vehicle_load_lights = true;
 
 	SetSavedDvar( "cg_aggressiveCullRadius", "100" );
+	SetSavedDvar( "phys_buoyancy", 1 ); // this enables buoyant physics objects in Radiant (our boat)
 	SetSavedDvar( "phys_ragdoll_buoyancy", 1 ); // this enables ragdoll corpses to float. Note required, but fun.    
 	SetSavedDvar( "vehicle_riding", 0 );
 
@@ -113,14 +119,15 @@ intro_hud_fadeout()
 
 level_precache()
 {
+	// Items
 	PreCacheItem( "barretm82_emplacement" );
 	PreCacheItem( "ac130_vulcan_minigun" );
 	PreCacheItem( "ac130_howitzer_minigun" );
 	PreCacheItem( "rpg_magic_bullet_sp" );
 	PreCacheItem( "rpg_player_sp" );
-//	PreCacheItem( "irstrobe_sp" );
-//	PreCacheItem( "nightingale_sp" );
-//	PreCacheItem( "epipen_sp" );
+//T6todo	PreCacheItem( "irstrobe_sp" );
+//T6todo	PreCacheItem( "nightingale_sp" );
+//T6todo	PreCacheItem( "epipen_sp" );
 	PreCacheItem( "ak47_gl_sp" );
 	PreCacheItem( "gl_ak47_sp" );
 	PreCacheItem( "knife_held_sp" ); // contextual melee knife
@@ -129,6 +136,7 @@ level_precache()
 	PreCacheItem( "nightingale_dpad_sp" );
 	PreCacheItem( "apache_rockets" );
 
+	// Models
 	PreCacheModel( "anim_jun_ammo_box" );
 	PrecacheModel( "veh_iw_hummer_win_xcam" );
 	PreCacheModel( "p6_graffiti_card" );
@@ -139,17 +147,13 @@ level_precache()
 	PreCacheModel( "c_usa_milcas_woods_hair_cap" );
 	PreCacheModel( "p6_anim_beer_can" );
 	PreCacheModel( "p6_patio_table_teak" );
-//	PreCacheModel( "p6_anim_burlap_sack" );
-//	PreCacheModel( "t6_wpn_molotov_cocktail_prop_world" );
-//	PreCacheModel( "c_usa_woods_panama_lower_dmg1_viewbody" );
-//	PreCacheModel( "c_usa_woods_panama_lower_dmg2_viewbody" );
-//	PreCacheModel( "veh_iw_mh6_littlebird" );
+//T6todo	PreCacheModel( "p6_anim_burlap_sack" );
+//T6todo	PreCacheModel( "t6_wpn_molotov_cocktail_prop_world" );
+//T6todo	PreCacheModel( "c_usa_woods_panama_lower_dmg1_viewbody" );
+//T6todo	PreCacheModel( "c_usa_woods_panama_lower_dmg2_viewbody" );
+//T6todo	PreCacheModel( "veh_iw_mh6_littlebird" );
 	PreCacheModel( "c_usa_seal80s_skinner_fb" );
-
-	PreCacheShader( "cinematic" );
-//T6todo	PreCacheShader( "ballcap_panama_overlay" );
-
-//	PrecacheModel( "p6_anim_hangar_hatch" );
+//T6todo	PrecacheModel( "p6_anim_hangar_hatch" );
 	PreCacheModel( "p6_anim_cloth_pajamas" );
 	PreCacheModel( "p6_anim_duffle_bag" );
 	PreCacheModel( "c_usa_jungmar_pow_barnes" );
@@ -164,8 +168,12 @@ level_precache()
 	PreCacheModel( "t5_weapon_sog_knife_viewmodel" );
 	PreCacheModel( "p6_anim_flak_jacket" );
 
-	// setting up the mig's bombs through it's vehicle script
-	maps\_mig17::mig_setup_bombs( "plane_mig23" );
+	// Shaders
+	PreCacheShader( "cinematic" );
+//T6todo	PreCacheShader( "ballcap_panama_overlay" );
+
+//T6todo	// setting up the mig's bombs through it's vehicle script
+//T6todo	maps\_mig17::mig_setup_bombs( "plane_mig23" );
 }
 
 setup_skiptos()

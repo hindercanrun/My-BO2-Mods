@@ -22,8 +22,8 @@ main()
 	// Overrides the default introscreen function
 	level.custom_introscreen = ::panama_custom_introscreen;
 
-//T6todo	maps\_hiding_door::door_main(); // run this to enable the hiding_door scripts
-//T6todo	maps\_hiding_door::window_main(); // run this to enable the hiding_window scripts
+//T6todo	maps\_hiding_door::door_main(); // Run this to enable the hiding_door scripts
+//T6todo	maps\_hiding_door::window_main(); // Run this to enable the hiding_window scripts
 
 	maps\_load::main();
 	maps\panama_amb::main();
@@ -32,22 +32,22 @@ main()
 	// To run the stealth script on the players
 	OnPlayerConnect_Callback( ::on_player_connect );
 
-	// panama fog and post effects gsc
+	// Panama fog and post FX
 	maps\createart\panama_art::main();
 
-//T6todo	maps\_flare::main(); // start the _flare scripts
+//T6todo	maps\_flare::main(); // Start the _flare() scripts
 	maps\_stealth_logic::stealth_init();
 	maps\_stealth_behavior::main();
 	maps\_swimming::main(); // Enable the swimming feature
 
 //T6todo	maps\_drones::init();
 
-	//inits vehicle lights
+	// Inits vehicle lights
 	level._vehicle_load_lights = true;
 
 	SetSavedDvar( "cg_aggressiveCullRadius", "100" );
-	SetSavedDvar( "phys_buoyancy", 1 ); // this enables buoyant physics objects in Radiant (our boat)
-	SetSavedDvar( "phys_ragdoll_buoyancy", 1 ); // this enables ragdoll corpses to float. Note required, but fun.    
+	SetSavedDvar( "phys_buoyancy", 1 ); // This enables buoyant physics objects in Radiant (our boat)
+	SetSavedDvar( "phys_ragdoll_buoyancy", 1 ); // This enables ragdoll corpses to float - Not required, but fun
 	SetSavedDvar( "vehicle_riding", 0 );
 
 	level thread setup_global_challenges();
@@ -65,7 +65,7 @@ main()
 	SetSavedDvar( "vehicle_selfCollision", 0 );
 }
 
-// self == player
+// self -> player
 on_player_connect()
 {
 	self thread setup_section_challenges();
@@ -89,14 +89,13 @@ panama_custom_introscreen( level_prefix, number_of_lines, totaltime, text_color 
 
 	introblack thread intro_hud_fadeout();
 
-
-	// notify from intro animation
+	// Notify intro animation
 	flag_wait( "show_introscreen_title" );
 
 	LUINotifyEvent( &"hud_add_title_line", 4, level_prefix, number_of_lines, totaltime, text_color );
 	waittill_textures_loaded();
 
-	// default wait time
+	// The default wait time
 	wait 2.5;
 
 	level notify( "introscreen_done" );
@@ -169,23 +168,28 @@ level_precache()
 	// Shaders
 	PreCacheShader( "cinematic2d" );
 
-//T6todo	// setting up the mig's bombs through it's vehicle script
+	// setting up the mig's bombs through it's vehicle script
 //T6todo	maps\_mig17::mig_setup_bombs( "plane_mig23" );
 }
 
 setup_skiptos()
 {
-	//-- Skipto's.  These set up skipto points as well as set up the flow of events in the level.  See module_skipto for more info
-	add_skipto( "house", maps\panama_house::skipto_house, "House", maps\panama_house::main );
+	// Skipto's - These set up skipto points as well as set up the flow of events in the level.
+	// Check _skipto::module_skipto() for more info
+	
+	// Panama 1
+	add_skipto( "house", maps\panama_house::skipto_house, "McKnight's House", maps\panama_house::main );
 	add_skipto( "zodiac", maps\panama_airfield::skipto_zodiac, "Zodiac Approach", maps\panama_airfield::zodiac_approach_main );
 	add_skipto( "beach", maps\panama_airfield::skipto_beach, "Beach", maps\panama_airfield::beach_main );
 	add_skipto( "runway", maps\panama_airfield::skipto_runway, "Runway Standoff", maps\panama_airfield::runway_standoff_main );	
 	add_skipto( "learjet", maps\panama_airfield::skipto_learjet, "Lear Jet", maps\panama_airfield::learjet_main );		
 	add_skipto( "motel", maps\panama_motel::skipto_motel, "Motel", maps\panama_motel::main );
 
+	// Panama 2
 	add_skipto( "slums_intro", ::skipto_panama_2, "Slums Intro" );
 	add_skipto( "slums_main", ::skipto_panama_2, "Slums Main" );
 
+	// Panama 3
 	add_skipto( "building", ::skipto_panama_3, "Building" );
 	add_skipto( "chase", ::skipto_panama_3, "Chase" );
 	add_skipto( "checkpoint", ::skipto_panama_3, "Checkpoint" );
@@ -210,7 +214,7 @@ skipto_panama_3()
 /* ------------------------------------------------------------------------------------------
 CHALLENGES
 -------------------------------------------------------------------------------------------*/
-setup_section_challenges() // self == player
+setup_section_challenges() // self -> player
 {
 	self thread maps\_challenges_sp::register_challenge( "thinkfast", maps\panama_airfield::challenge_thinkfast );
 	self thread maps\_challenges_sp::register_challenge( "flak_jacket", maps\panama_airfield::challenge_kill_ai_with_flak_jacket );

@@ -30,9 +30,9 @@ level_init_flags()
 	flag_init( "house_player_at_exit" );
 
 	// Panama 1 - Zodiac Approach
-    flag_init( "beach_obj_1" );
-    flag_init( "beach_obj_2" );
-    flag_init( "beach_obj_3" );
+	flag_init( "beach_obj_1" );
+	flag_init( "beach_obj_2" );
+	flag_init( "beach_obj_3" );
     flag_init( "stop_ac130" );
     flag_init( "zodiac_approach_start" );
     flag_init( "zodiac_approach_end" );
@@ -296,7 +296,7 @@ setup_objectives()
 	level.obj_meet = register_objective( "Meet up with Mason" );
 	level.obj_meet_mcknight = register_objective( &"PANAMA_OBJ_MEET_MCKNIGHT" );
 	level.obj_follow_mason = register_objective( "Follow Mason" );
-	level.obj_house_empty = register_objective( "Test" );
+	level.obj_house_empty = register_objective( "" );
 	level.obj_shed = register_objective( "Retrieve the Duffle Bag from Mcknight's shed" );
 	level.obj_frontyard = register_objective( "Go To Woods' Hummer" );
 

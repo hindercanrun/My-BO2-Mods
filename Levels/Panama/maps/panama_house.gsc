@@ -78,6 +78,13 @@ house_intro_setup()
 	level.ai_mason_casual.animname = "mason";
 	level ClientNotify( "sscig" );
 
+	//Skinner and Jane arguing
+	//ai_skinner_casual = simple_spawn_single( "ai_skinner_casual", ::init_casual_hero );
+	//ai_skinner_casual.animname = "skinner";
+
+	//ai_jane_window = simple_spawn_single( "ai_jane_window", ::init_casual_hero );
+	//ai_jane_window.animname = "jane";
+
 	run_scene_first_frame( "house_front_door" );
 	run_scene_first_frame( "front_gate" );
 	run_scene_first_frame( "get_bag_door" );
@@ -489,13 +496,13 @@ house_event_exit()
 	delay_thread( 6, ::flag_set, "show_introscreen_title" );
 
 	level thread house_end_flag();
-	level thread run_scene_and_delete( "outro_back_gate", 1 );
+	level thread run_scene_and_delete( "outro_back_gate", true );
 
 	level notify( "stop_painting" ); // For sound
 
-	level.player startcameratween( 1 );
+	level.player StartCameraTween( true );
 
-	level thread run_scene_and_delete( "player_outro", 1 );
+	level thread run_scene_and_delete( "player_outro", true );
 	level thread hide_beer_can();
 
 	flag_wait( "player_outro_started" );

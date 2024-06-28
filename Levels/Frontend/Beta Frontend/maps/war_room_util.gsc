@@ -9,16 +9,42 @@
 
 #include common_scripts\utility;
 #include maps\_utility;
+#include maps\_endmission;
 
 //RTAtodo #insert raw\common_scripts\utility.gsh;
+//RTATodo #insert raw\maps\frontend.gsh;
 
 #define HOLO_TABLE_EXPLODER		(111)
 #define MAX_TERRITORY_INDEX		(5)
 #define CLIENT_FLAG_MAP_MONITOR 13
+#define CLIENT_FLAG_HOLO_RED		14
+#define CLIENT_FLAG_HOLO_VISIBLE	15
+
+// Defintions in 
+#define TINT_UNAVAILABLE				4
+#define TINT_CLEARED					3
+#define TINT_FAILED						2
+#define TINT_AVAILABLE					0
 	
 holo_table_system_init()
 {
 	flag_init( "allow_holo_table_input" );
+}
+
+rotate_indefinitely( rotate_time = 45, rotate_fwd = true )
+{
+	self endon( "stop_spinning" );
+	self endon( "death" );
+	self endon( "delete" );
+	while ( true )
+	{
+		if ( rotate_fwd )
+			self RotateYaw( 360, rotate_time, 0, 0 );
+		else
+			self RotateYaw( -360, rotate_time, 0, 0 );
+		
+		wait rotate_time - 0.1;
+	}
 }
 
 // Rotate forever.
@@ -189,7 +215,8 @@ holo_table_initialize( str_hologram, str_map_center_origin )
 	holo_table.e_origin = GetEnt( str_map_center_origin, "targetname" );
 	
 	// put them on the same veritcal plane.
-	holo_table.e_origin.origin = ( holo_table.e_origin.origin[ 0 ], holo_table.e_origin.origin[ 1 ], display.origin[ 2 ] );
+//RTAtodo	VEC_SET_Z( holo_table.e_origin.origin, display.origin[2] );
+	holo_table.e_origin.origin = ( holo_table.e_origin.origin[0], holo_table.e_origin.origin[1], display.origin[2] );
 	
 	// Grab "points of interest."
 	holo_table.poi_list = [];
@@ -236,7 +263,6 @@ holo_table_boot_sequence( allow_player_input )
 	const n_scale_time = 2;
 	const n_blinks = 3;
 	
-	exploder( HOLO_TABLE_EXPLODER ); //-- moved this to frontend_util
 	for( i=0; i<n_blinks; i++)
 	{
 		self.display Show();
@@ -381,50 +407,142 @@ set_world_map_icon( icon_index )
 	Rpc( "clientscripts/frontend", "set_world_map_icon", icon_index );
 }
 
-refresh_war_maps()
+world_map_zoom_to( x, y, scale )
 {
-	monitor_list = GetEntArray( "world_map", "targetname" );
+	rpc( "clientscripts/frontend", "world_map_translate_to", 0, x, y, scale );
+}
+
+war_map_blink_country( territory_index, blink_color, end_blink_notify )
+{
+	assert( isdefined( territory_index ) );
+	if ( isdefined( end_blink_notify ) )
+		level endon( end_blink_notify );
 	
-	// Clear the flag so we can re-set it.
-	foreach( monitor in monitor_list )
+	blink_on = true;
+	while ( true )
 	{
-		monitor ClearClientFlag( CLIENT_FLAG_MAP_MONITOR );
-	}
-	
-	wait_network_frame();
-	
-	foreach( monitor in monitor_list )
-	{
-		monitor SetClientFlag( CLIENT_FLAG_MAP_MONITOR );
+		cur_color = TINT_UNAVAILABLE;		// blank
+		if ( blink_on )
+			cur_color = blink_color;
+		
+		set_world_map_tint( territory_index, cur_color );
+		refresh_war_map_shader();
+		
+		blink_on = !blink_on;
+		
+		wait 0.2;
 	}
 }
 
-/#
-randomize_war_map()
+refresh_war_map_shader()
 {
-	while ( true )
+	rpc( "clientscripts/frontend", "refresh_all_map_shaders", 0 );
+}
+
+// for objects that aren't using a color shader.
+//
+script_model_blink_on()
+{
+	for ( i = 0; i < 3; i++ )
 	{
-		wait 4.0;
-		set_world_map_icon( RandomIntRange( 0, 6 ) );
-		for ( i = 0; i < 6; i++ )
-		{
-			toggle = true;
-			if ( RandomFloat( 1.0 ) > 0.5 ) 
-			{
-				toggle = false;
-			}
-			set_world_map_marker( i, toggle );
-			
-			toggle = true;
-			if ( RandomFloat( 1.0 ) > 0.5 ) 
-			{
-				toggle = false;
-			}
-			set_world_map_widget( i, toggle );
-			set_world_map_tint( i, RandomIntRange( 0, 6 ) );
-		}
-		refresh_war_maps();
+		self Show();
+		wait 0.2;
+		self Hide();
+		wait 0.2;
+	}
+	
+	self Show();
+}
+
+// for objects that use the CLIENT_FLAG_HOLO_RED shader.
+//
+holo_table_prop_blink_on( off_after_seconds = undefined )
+{
+	for ( i = 0; i < 4; i++ )
+	{
+		self SetClientFlag( CLIENT_FLAG_HOLO_RED );
+		wait 0.2;
+		self ClearClientFlag( CLIENT_FLAG_HOLO_RED );
+		wait 0.2;
+	}
+	
+	self SetClientFlag( CLIENT_FLAG_HOLO_RED );
+	
+	if ( isdefined( off_after_seconds ) )
+	{
+		wait off_after_seconds;
+		self ClearClientFlag( CLIENT_FLAG_HOLO_RED );
 	}
 }
-#/
+
+holo_table_exploder_switch( exploder_num = undefined )
+{
+	if ( isdefined( level.m_table_exploder ) )
+		level thread stop_exploder( level.m_table_exploder );
+	
+	if ( isdefined( exploder_num ) )
+	{
+		level thread exploder( exploder_num );
+	}
+	
+	level.m_table_exploder = exploder_num;
+}
+
+holo_table_feature_prop( model_name, done_notify, scale = 1.0, map_objective_list = undefined, v_offset = (0,0,0), str_targetname = "holo_prop", b_spin = true )
+{
+	self endon( "death" );
+	
+	rotate_time = 60.0;
+	rotate_fwd = false;
+	extra_spin = (0,0,0);
+	
+	if ( IsSubStr( model_name, "zhao" ) )
+	{
+		extra_spin = (0,90,0);
+		holo_table_exploder_switch( 114 );
+		rotate_time = 120.0;
+		rotate_fwd = true;
+	}
+	
+	if ( isdefined( map_objective_list ) )
+	{
+		foreach( e_obj in map_objective_list )
+		{
+			e_obj play_fx( "fx_briefing_objective", e_obj.origin, e_obj.angles, "obj_done", true, "tag_origin" );
+			e_obj thread holo_table_prop_blink_on();
+		}
+	}
+	
+	e_spin = GetEnt( "holo_table_spin", "targetname" );
+	e_model = spawn_model( model_name, e_spin.origin + v_offset, e_spin.angles + extra_spin );
+	
+	if ( !IsDefined( b_spin ) || ( IsDefined( b_spin ) && b_spin ) )
+	{
+		e_model thread rotate_indefinitely( rotate_time, rotate_fwd );
+	}
+	
+	e_model SetScale( scale );
+	e_model.targetname = str_targetname;
+	
+	e_model IgnoreCheapEntityFlag( true );
+	e_model SetClientFlag( CLIENT_FLAG_HOLO_VISIBLE );
+	
+	if ( !IsSubStr( model_name, "zhao" ) )
+	{
+		e_model SetClientFlag( CLIENT_FLAG_HOLO_RED );
+	}
+	
+	level waittill( done_notify );
+	if ( isdefined( map_objective_list ) )
+	{
+		foreach( e_obj in map_objective_list )
+		{
+			e_obj ClearClientFlag( CLIENT_FLAG_HOLO_RED );
+			e_obj notify( "obj_done" );
+		}
+	}
+	
+	e_model ClearClientFlag( CLIENT_FLAG_HOLO_VISIBLE );
+}
+
 

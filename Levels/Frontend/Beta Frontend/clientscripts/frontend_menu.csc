@@ -28,6 +28,8 @@ frontend_menu_init()
 
 setup_ui3d()
 {
+	//note that this ui3d layout is "illegal" since it utilizes the code reseverd part of the texture (slot 5 is always the right half of the texture)
+	//but it's okay because the user doesn't use any weapons in this level
 	// 2 512x512 windows split vertically
 	ui3dsetwindow( 0, 0, 0, 0.5, 1 );
 	ui3dsetwindow( 1, 0.5, 0, 0.5, 1 );

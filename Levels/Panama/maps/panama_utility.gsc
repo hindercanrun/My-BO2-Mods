@@ -293,12 +293,11 @@ setup_objectives()
 	level.n_obj_index = 0;
 
 	// McKnight's house
-	level.obj_meet = register_objective( "Meet up with Mason" );
-	level.obj_meet_mcknight = register_objective( &"PANAMA_OBJ_MEET_MCKNIGHT" );
-	level.obj_follow_mason = register_objective( "Follow Mason" );
-	level.obj_house_empty = register_objective( "" );
-	level.obj_shed = register_objective( "Retrieve the Duffle Bag from Mcknight's shed" );
-	level.obj_frontyard = register_objective( "Go To Woods' Hummer" );
+	level.obj_house_meet_mason = register_objective( "Meet up with Mason" );
+	level.obj_house_meet_mcknight = register_objective( "Meet up with McKnight" );
+	level.obj_house_follow_mason = register_objective( "Follow Mason" );
+	level.obj_house_shed = register_objective( "Retrieve the duffle bag from Mcknight's shed" );
+	level.obj_house_frontyard = register_objective( "Go to your Hummer" );
 
 	// Zodiac Approach
 	level.obj_interact = register_objective( "test" );
@@ -364,63 +363,41 @@ challenge_nodeath( str_notify )
 
 house_objectives()
 {
-    wait 13;
+	wait 13;
 
-    set_objective( level.obj_meet, getstruct( "s_greet_mason_obj" ), "breadcrumb" );
+	set_objective( level.obj_house_meet_mason, getStruct( "s_greet_mason_obj" ), "breadcrumb" );
 
-    flag_wait( "house_meet_mason" );
-    flag_wait( "house_follow_mason" );
-    set_objective( level.obj_meet, getstruct( "s_greet_mason_obj" ), "done" );
-    set_objective( level.obj_meet_mcknight, getstruct( "s_front_door" ), "breadcrumb" );
+	flag_wait( "house_meet_mason" );
+	flag_wait( "house_follow_mason" );
 
-    flag_wait( "house_front_door_obj_done" );
+	set_objective( level.obj_house_meet_mason, getStruct( "s_greet_mason_obj" ), "done" );
 
-    wait 5; // Unsure if this wait is needed - will keep it just in case
+	set_objective( level.obj_house_follow_mason, level.mason, "follow" );
 
-    set_objective( level.obj_meet_mcknight, getstruct( "s_front_door" ), "done" );
+	flag_wait( "house_front_door_obj_done" );
 
-    flag_wait( "house_front_gate_obj" );
-    set_objective( level.obj_follow_mason, getstruct( "s_front_gate" ), "breadcrumb" );
+	wait 5;
 
-    flag_wait( "player_at_front_gate" );
-    set_objective( level.obj_follow_mason, getstruct( "s_front_gate" ), "done" );
+	set_objective( level.obj_house_meet_mcknight, getStruct( "s_front_door" ), "breadcrumb" );
 
-    // TODO: Add "Pat McKnight's dog" here - cut
+	flag_wait( "start_shed_obj" );
 
-    flag_wait( "start_shed_obj" );
-    set_objective( level.obj_shed, getstruct( "s_shed_door_obj" ), "breadcrumb" );
+	set_objective( level.obj_house_meet_mcknight, getStruct( "s_front_door" ), "done" );
+	set_objective( level.obj_house_shed, getStruct( "s_shed_door_obj" ), "breadcrumb" );
 
-    flag_wait( "player_opened_shed" );
-    set_objective( level.obj_shed, getstruct( "s_shed_door_obj" ), "done" );
+	flag_wait( "player_opened_shed" );
 
-    flag_wait( "player_frontyard_obj" );
-    set_objective( level.obj_frontyard, getstruct( "s_player_gate_obj" ), "breadcrumb" );
+	wait 4;
 
-    flag_wait( "house_player_at_exit" );
-    set_objective( level.obj_frontyard, getstruct( "s_player_gate_obj" ), "done" );
+	set_objective( level.obj_house_shed, getStruct( "s_shed_door_obj" ), "done" );
 
+	flag_wait( "player_frontyard_obj" );
 
-/*
-    flag_wait( "house_follow_mason" );
-    set_objective( level.obj_meet_mcknight, getstruct( "s_front_door" ), "breadcrumb" );
-    flag_wait( "house_front_door_obj_done" );
-    flag_wait( "house_front_gate_obj" );
-    set_objective( level.obj_meet, getstruct( "s_front_gate" ), "breadcrumb" );
-    flag_wait( "player_at_front_gate" );
-    set_objective( level.obj_meet, getstruct( "s_front_gate" ), "done" );
-    flag_wait( "start_shed_obj" );
-    set_objective( level.obj_shed, getstruct( "s_shed_door_obj" ), "breadcrumb" );
-    flag_wait( "player_opened_shed" );
-    set_objective( level.obj_shed, undefined, "remove" );
-    set_objective( level.obj_shed, undefined, "done" );
-    set_objective( level.obj_shed, undefined, "delete" );
-    flag_wait( "player_frontyard_obj" );
-    set_objective( level.obj_frontyard, getstruct( "s_player_gate_obj" ), "breadcrumb" );
-    flag_wait( "house_player_at_exit" );
-    set_objective( level.obj_frontyard, undefined, "remove" );
-    set_objective( level.obj_frontyard, undefined, "done" );
-    set_objective( level.obj_frontyard, undefined, "delete" );
-*/
+	set_objective( level.obj_house_frontyard, getStruct( "s_player_gate_obj" ), "breadcrumb" );
+
+	flag_wait( "house_player_at_exit" );
+
+	set_objective( level.obj_house_frontyard, getStruct( "s_player_gate_obj" ), "done" );
 }
 
 airfield_objectives()
@@ -1077,26 +1054,37 @@ player_lock_in_position( origin, angles )
 
 old_man_woods( str_movie_name, notify_special )
 {
-    level clientnotify( "omw_on" );
-    flag_clear( "movie_done" );
-    cin_id = play_movie_async( str_movie_name, 0, 0, undefined, 1, "movie_done", 1 );
+	level ClientNotify( "omw_on" );
 
-    while ( !iscinematicinprogress( cin_id ) )
-        wait 0.05;
+	flag_clear( "movie_done" );
 
-    wait 1;
-    flag_set( "movie_started" );
+	cin_id = play_movie_async( str_movie_name, false, false, undefined, true, "movie_done", 1 );
 
-    while ( iscinematicinprogress( cin_id ) )
-        wait 0.05;
+	while ( !IsCinematicInProgress( cin_id ) )
+	{
+		wait 0.05;
+	}
 
-    flag_set( "movie_done" );
-    flag_clear( "movie_started" );
+	wait 1;
 
-    if ( isdefined( notify_special ) )
-        level clientnotify( notify_special );
-    else
-        level clientnotify( "omw_off" );
+	flag_set( "movie_started" );
+
+	while ( IsCinematicInProgress( cin_id ) )
+	{
+		wait 0.05;
+	}
+
+	flag_set( "movie_done" );
+	flag_clear( "movie_started" );
+
+	if ( IsDefined( notify_special ) )
+	{
+		level ClientNotify( notify_special );
+	}
+	else
+	{
+		level ClientNotify( "omw_off" );
+	}
 }
 
 run_anim_to_idle( str_start_scene, str_idle_scene )
@@ -1107,23 +1095,29 @@ run_anim_to_idle( str_start_scene, str_idle_scene )
 
 fail_player( str_dead_quote_ref )
 {
-    setdvar( "ui_deadquote", str_dead_quote_ref );
-    level notify( "mission failed" );
-    maps\_utility::missionfailedwrapper();
+	SetDvar( "ui_deadquote", str_dead_quote_ref );
+
+	level notify( "mission failed" );
+
+	maps\_utility::missionFailedWrapper();
 }
 
-set_custom_flashlight_values( range, startradius, endradius, fovinnerfraction, brightness, offset, color, bob_amount )
+set_custom_flashlight_values( range, startRadius, endRadius, FoVInnerFraction, brightness, offset, colour, bob_amount )
 {
-    wait 1.0;
-    setsaveddvar( "r_enableFlashlight", "1" );
-    setsaveddvar( "r_flashLightRange", range );
-    setsaveddvar( "r_flashLightStartRadius", startradius );
-    setsaveddvar( "r_flashLightEndRadius", endradius );
-    setsaveddvar( "r_flashLightFOVInnerFraction", fovinnerfraction );
-    setsaveddvar( "r_flashLightBrightness", brightness );
-    setsaveddvar( "r_flashLightOffset", offset );
-    setsaveddvar( "r_flashLightColor", color );
-    setsaveddvar( "r_flashLightColor", bob_amount );
+	wait 1.0;
+
+	// Turn on the light!
+	SetSavedDvar( "r_enableFlashlight","1" );
+
+	// Basic flashlight settings
+	SetSavedDvar( "r_flashLightRange", range );
+	SetSavedDvar( "r_flashLightStartRadius", startRadius );
+	SetSavedDvar( "r_flashLightEndRadius", endRadius );
+	SetSavedDvar( "r_flashLightFOVInnerFraction", FoVInnerFraction );
+	SetSavedDvar( "r_flashLightBrightness", brightness );
+	SetSavedDvar( "r_flashLightOffset", offset );
+	SetSavedDvar( "r_flashLightColor", colour );
+	SetSavedDvar( "r_flashLightColor", bob_amount );
 }
 
 notify_on_lookat_trigger( str_trig_name, str_notify )

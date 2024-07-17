@@ -75,27 +75,27 @@ on_player_connect()
 	self thread stealth_ai();
 }
 
-panama_custom_introscreen( level_prefix, number_of_lines, totaltime, text_color )
+panama_custom_introscreen( level_prefix, number_of_lines, totaltime, text_colour )
 {
-	introblack = NewHudElem();
-	introblack.x = 0;
-	introblack.y = 0;
-	introblack.horzAlign = "fullscreen";
-	introblack.vertAlign = "fullscreen";
-	introblack.foreground = true;
-	introblack SetShader( "black", 640, 480 );
+	introBlack = NewHudElem();
+	introBlack.x = 0;
+	introBlack.y = 0;
+	introBlack.horzAlign = "fullscreen";
+	introBlack.vertAlign = "fullscreen";
+	introBlack.foreground = true;
+	introBlack SetShader( "black", 640, 480 );
 
-	flag_wait( "all_players_connected" );
+	flag_wait("all_players_connected");
 
-	introblack thread intro_hud_fadeout();
+	introBlack thread intro_hud_fadeout();
 
-	// Notify intro animation
+	// Notify the intro animation
 	flag_wait( "show_introscreen_title" );
 
-	LUINotifyEvent( &"hud_add_title_line", 4, level_prefix, number_of_lines, totaltime, text_color );
+	LUINotifyEvent( &"hud_add_title_line", 4, level_prefix, number_of_lines, totaltime, text_colour );
 	waittill_textures_loaded();
 
-	// The default wait time
+	// Default wait time
 	wait 2.5;
 
 	level notify( "introscreen_done" );
@@ -176,7 +176,7 @@ setup_skiptos()
 {
 	// Skipto's - These set up skipto points as well as set up the flow of events in the level.
 	// Check _skipto::module_skipto() for more info
-	
+
 	// Panama 1
 	add_skipto( "house", maps\panama_house::skipto_house, "McKnight's House", maps\panama_house::main );
 	add_skipto( "zodiac", maps\panama_airfield::skipto_zodiac, "Zodiac Approach", maps\panama_airfield::zodiac_approach_main );
@@ -193,6 +193,7 @@ setup_skiptos()
 	add_skipto( "building", ::skipto_panama_3, "Building" );
 	add_skipto( "chase", ::skipto_panama_3, "Chase" );
 	add_skipto( "checkpoint", ::skipto_panama_3, "Checkpoint" );
+	add_skipto( "jeep", ::skipto_panama_3, "Jeep Ride" );
 	add_skipto( "docks", ::skipto_panama_3, "Docks" );
 	add_skipto( "sniper", ::skipto_panama_3, "Sniper" );
 

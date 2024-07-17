@@ -15,10 +15,10 @@ skipto_house()
 
 panama_wind_settings()
 {
-	SetSavedDvar( "wind_global_vector", "246.366 0 0" ); // Change "1 0 0" to your wind vector
-	SetSavedDvar( "wind_global_low_altitude", 0 ); // Change 0 to your wind's lower bound
-	SetSavedDvar( "wind_global_hi_altitude", 5000 ); // Change 10000 to your wind's upper bound
-	SetSavedDvar( "wind_global_low_strength_percent", 0.5 ); // Change 0.5 to your desired wind strength percentage	
+	setSavedDvar( "wind_global_vector", "246.366 0 0" ); // Change "1 0 0" to your wind vector
+	setSavedDvar( "wind_global_low_altitude", 0 ); // Change 0 to your wind's lower bound
+	setSavedDvar( "wind_global_hi_altitude", 5000 ); // Change 10000 to your wind's upper bound
+	setSavedDvar( "wind_global_low_strength_percent", 0.5 ); // Change 0.5 to your desired wind strength percentage	
 }
 
 main()
@@ -27,17 +27,15 @@ main()
 	level thread blackscreen( 0, 3, 0 );
 	level thread maps\createart\panama_art::house();
 
-	level.player_interactive_model = "c_usa_woods_panama_casual_viewbody";
-
 	house_intro_setup();
 
 	level thread screen_fade_in( 0.15 );
 
-	level.hummerSoundEnt = Spawn( "script_origin", ( 24315, -20231, 111 ) );
-	level.hummerSoundEnt PlayLoopSound( "evt_mason_vehicle_idle_loop", 3 );
+	level.hummerSoundEnt = spawn( "script_origin", ( 24315, -20231, 111 ) );
+	level.hummerSoundEnt playLoopSound( "evt_mason_vehicle_idle_loop", 3 );
 
-	level.player AllowCrouch( false );
-	level.player AllowProne( false );
+	level.player allowCrouch( false );
+	level.player allowProne( false );
 
 	player_exits_hummer();
 
@@ -52,8 +50,8 @@ main()
 	level thread house_clean_up_and_reset();
 	level thread restore_ik_headtracking_limits();
 
-	level.player AllowCrouch( true );
-	level.player AllowProne( true );
+	level.player allowCrouch( true );
+	level.player allowProne( true );
 
 	level waittill( "movie_done" );
 
@@ -64,12 +62,12 @@ main()
 
 house_ik_headtracking_limits()
 {
-	SetSavedDvar( "ik_pitch_limit_thresh", 20 );
-	SetSavedDvar( "ik_pitch_limit_max", 70 );
-	SetSavedDvar( "ik_roll_limit_thresh", 40 );
-	SetSavedDvar( "ik_roll_limit_max", 100 );
-	SetSavedDvar( "ik_yaw_limit_thresh", 20 );
-	SetSavedDvar( "ik_yaw_limit_max", 90 );
+	setSavedDvar( "ik_pitch_limit_thresh", 20 );
+	setSavedDvar( "ik_pitch_limit_max", 70 );
+	setSavedDvar( "ik_roll_limit_thresh", 40 );
+	setSavedDvar( "ik_roll_limit_max", 100 );
+	setSavedDvar( "ik_yaw_limit_thresh", 20 );
+	setSavedDvar( "ik_yaw_limit_max", 90 );
 }
 
 house_intro_setup()
@@ -77,13 +75,6 @@ house_intro_setup()
 	level.ai_mason_casual = simple_spawn_single( "ai_mason_casual", ::init_casual_hero );
 	level.ai_mason_casual.animname = "mason";
 	level ClientNotify( "sscig" );
-
-	//Skinner and Jane arguing
-	//ai_skinner_casual = simple_spawn_single( "ai_skinner_casual", ::init_casual_hero );
-	//ai_skinner_casual.animname = "skinner";
-
-	//ai_jane_window = simple_spawn_single( "ai_jane_window", ::init_casual_hero );
-	//ai_jane_window.animname = "jane";
 
 	run_scene_first_frame( "house_front_door" );
 	run_scene_first_frame( "front_gate" );
@@ -104,7 +95,7 @@ house_intro_setup()
 
 	level.player init_player();
 
-	exploder( 1001 );
+	Exploder( 1001 );
 
 	flag_wait( "skinner_jane_argue_loop_started" );
 
@@ -402,8 +393,8 @@ house_event_walk_to_shed()
 	level thread run_scene( "front_gate" );
 	level thread open_front_gate_clip();
 
-	level.Mason = get_ais_from_scene( "squad_to_backyard", "mason" );
-	level.Mason Attach( "p6_anim_beer_can", "tag_weapon_left" );
+	level.mason = get_ais_from_scene( "squad_to_backyard", "mason" );
+	level.mason Attach( "p6_anim_beer_can", "tag_weapon_left" );
 	level.McKnight Attach( "p6_anim_beer_can", "tag_weapon_left" );
 
 	m_front_gate_clip thread front_gate_close_wait();
@@ -470,6 +461,9 @@ house_event_backyard()
 	level thread run_scene( "masons_beer_loop" );
 	level thread mason_mcknight_wait_at_gate();
 	level thread gringo_spraypaint_vo();
+
+	level.player say_dialog( "mckn_they_made_for_intere_0" );
+	level.player say_dialog( "maso_yeah_don_t_belie_0" );
 }
 
 mason_mcknight_wait_at_gate()
@@ -738,9 +732,9 @@ gringo_spraypaint_vo()
 
 	wait ( time - 10 );
 
-	GraffitiKids = GetEnt( "m_gringo_graffiti", "targetname" );
-	GraffitiKids say_dialog( "tee1_hurry_it_up_0", 3, true );
-	GraffitiKids say_dialog( "tee2_okay_okay_0", 2, true );
-	GraffitiKids say_dialog( "tee1_that_s_good_come_0", 2, true );
-	GraffitiKids say_dialog( "tee2_go_go_go_0", 1, true );
+	Graffiti_Kids = GetEnt( "m_gringo_graffiti", "targetname" );
+	Graffiti_Kids say_dialog( "tee1_hurry_it_up_0", 3, true );
+	Graffiti_Kids say_dialog( "tee2_okay_okay_0", 2, true );
+	Graffiti_Kids say_dialog( "tee1_that_s_good_come_0", 2, true );
+	Graffiti_Kids say_dialog( "tee2_go_go_go_0", 1, true );
 }

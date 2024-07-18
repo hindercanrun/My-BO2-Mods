@@ -390,15 +390,15 @@ house_event_walk_to_shed()
 	flag_set( "player_at_front_gate" );
 
 	m_front_gate_clip = GetEnt( "m_front_gate_clip", "targetname" );
-	m_front_gate_clip MoveTo( m_front_gate_clip.origin - ( 0, 0, 128 ), 0.05 );
+	m_front_gate_clip moveto( m_front_gate_clip.origin - ( 0, 0, 128 ), 0.05 );
 
 	level thread run_scene( "squad_to_backyard" );
 	level thread run_scene( "front_gate" );
 	level thread open_front_gate_clip();
 
 	level.mason = get_ais_from_scene( "squad_to_backyard", "mason" );
-	level.mason Attach( "p6_anim_beer_can", "tag_weapon_left" );
-	level.McKnight Attach( "p6_anim_beer_can", "tag_weapon_left" );
+	level.mason attach( "p6_anim_beer_can", "tag_weapon_left" );
+	level.mcknight attach( "p6_anim_beer_can", "tag_weapon_left" );
 
 	m_front_gate_clip thread front_gate_close_wait();
 
@@ -440,7 +440,7 @@ house_event_backyard()
 	turn_on_reflection_cam( "reflection_cam" );
 
 	m_shed_door_extra = GetEnt( "m_mirrored_shed_door", "targetname" );
-	m_shed_door_extra Delete();
+	m_shed_door_extra delete();
 
 	level thread run_scene( "reflection_woods_grabs_bag" );
 	level thread run_scene( "reflection_woods_grabs_bag_door" );
@@ -459,12 +459,15 @@ house_event_backyard()
 	level thread paint_spray();
 	level thread run_scene( "leave_table" );
 
-	level.mason Detach( "p6_anim_beer_can", "tag_weapon_left" );
+	level.mason detach( "p6_anim_beer_can", "tag_weapon_left" );
 
 	level thread run_scene( "masons_beer_loop" );
 	level thread mason_mcknight_wait_at_gate();
 	level thread gringo_spraypaint_vo();
 
+	level.player say_dialog( "mckn_i_took_the_liberty_o_0" );
+	level.player say_dialog( "mckn_all_that_shit_with_t_0" );
+	level.player say_dialog( "maso_they_gave_it_their_b_0" );
 	level.player say_dialog( "mckn_they_made_for_intere_0" );
 	level.player say_dialog( "maso_yeah_don_t_belie_0" );
 }
@@ -487,8 +490,8 @@ house_event_exit()
 
 	SetMusicState(" PANAMA_GATE_OPENED" );
 
-	Graffiti = GetEnt( "m_gringo_graffiti", "targetname" );
-	Graffiti show();
+	graffiti = GetEnt( "m_gringo_graffiti", "targetname" );
+	graffiti show();
 
 	delay_thread( 6, ::flag_set, "show_introscreen_title" );
 
@@ -505,7 +508,7 @@ house_event_exit()
 	flag_wait( "player_outro_started" );
 
 	ai_tagger = GetEnt( "gringo_tagger_ai", "targetname" );
-	ai_tagger Attach( "p_glo_spray_can", "tag_weapon_left" );
+	ai_tagger attach( "p_glo_spray_can", "tag_weapon_left" );
 
 	level thread fade_out_house_end();
 
@@ -522,8 +525,8 @@ hide_beer_can()
 {
 	level waittill( "player_outro_started" );
 
-	BeerCan = get_model_or_models_from_scene( "player_outro", "beer" );
-	BeerCan hide();
+	beer_can = get_model_or_models_from_scene( "player_outro", "beer" );
+	beer_can hide();
 }
 
 #using_animtree( "player" );

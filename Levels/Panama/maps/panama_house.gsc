@@ -114,8 +114,8 @@ get_skinner_ai()
 // self -> player
 init_player()
 {
-	self AllowJump( false );
-	self AllowSprint( false );
+	self allowJump( false );
+	self allowSprint( false );
 	self hide_hud();
 
 	SetSavedDvar( "vehicle_riding", "0" );
@@ -206,33 +206,33 @@ house_warn_player_logic()
 
 house_clean_up_and_reset()
 {
-	//destroy hat hud
+	// Destroy hat HUD
 	level notify( "hat_off" );
 
 	a_house_vehicles = GetEntArray( "house_vehicles", "script_noteworthy" );
 
 	foreach ( vehicle in a_house_vehicles )
 	{
-		if ( IsDefined( vehicle ) )
+		if ( isDefined( vehicle ) )
 		{
-            vehicle.delete_on_death = 1;
-            vehicle notify( "death" );
+			vehicle.delete_on_death = 1;
+			vehicle notify( "death" );
 
-            if ( !isalive( vehicle ) )
-                vehicle delete();
-        }
-    }
+			if ( !isAlive( vehicle ) )
+				vehicle delete();
+		}
+	}
 
-	//just in case
-	a_ai = GetAIArray();
+	// Just in case
+	a_ai = getAIArray();
 
 	foreach ( ai in a_ai )
-		ai Delete();
+		ai delete();
 
 	a_house_triggers = GetEntArray( "house_trigger", "script_noteworthy" );
 
 	foreach ( t_house in a_house_triggers )
-		t_house Delete();
+		t_house delete();
 
 	flag_wait( "house_event_end" );
 
@@ -240,6 +240,7 @@ house_clean_up_and_reset()
 	level.player AllowSprint( true );
 	level.player AllowJump( true );
 	level.player show_hud();
+
 	level.player notify( "house_event_end" );
 }
 
@@ -311,18 +312,18 @@ ambient_neighborhood_vehicles()
 
 	while ( true )
 	{
-		if ( RandomInt(3) == 0 )
+		if ( RandomInt( 3 ) == 0 )
 			DistantVehicles = "pan_hatchback";
-		else if ( RandomInt(3) == 1 )
+		else if ( RandomInt( 3 ) == 1 )
 			DistantVehicles = "pan_van";	
 		else
 			DistantVehicles = "pan_truck";
 
-		if ( RandomInt(4) == 0 )
+		if ( RandomInt( 4 ) == 0 )
 			PathStart = GetVehicleNode( "start_sideroad_1", "targetname" );
-		else if ( RandomInt(4) == 1 )
+		else if ( RandomInt( 4 ) == 1 )
 			PathStart = GetVehicleNode( "start_sideroad_2", "targetname" );
-		else if ( RandomInt(4) == 2 )
+		else if ( RandomInt( 4 ) == 2 )
 			PathStart = GetVehicleNode( "start_sideroad_3", "targetname" );
 		else
 			PathStart = GetVehicleNode( "start_sideroad_4", "targetname" );
@@ -403,7 +404,7 @@ house_event_walk_to_shed()
 
 	level thread shed_door_wait();
 
-	level.player thread say_dialog( "maso_hey_mcknight_you_g_0", 8 ); // Hey McKnight - You got the stuff?
+	level.player thread say_dialog( "maso_hey_mcknight_you_g_0", 8 ); // "Hey McKnight - You got the stuff?"
 
 	level.player.n_speed_scale_min = 0.35;
 	level.player.n_speed_scale_max = 0.65;
@@ -412,7 +413,7 @@ house_event_walk_to_shed()
 
 	wait 0.05;
 
-	Exploder( 1003 );
+	exploder( 1003 );
 }
 
 open_front_gate_clip()
@@ -487,7 +488,7 @@ house_event_exit()
 	SetMusicState(" PANAMA_GATE_OPENED" );
 
 	Graffiti = GetEnt( "m_gringo_graffiti", "targetname" );
-	Graffiti Show();
+	Graffiti show();
 
 	delay_thread( 6, ::flag_set, "show_introscreen_title" );
 
@@ -522,7 +523,7 @@ hide_beer_can()
 	level waittill( "player_outro_started" );
 
 	BeerCan = get_model_or_models_from_scene( "player_outro", "beer" );
-	BeerCan Hide();
+	BeerCan hide();
 }
 
 #using_animtree( "player" );
@@ -602,7 +603,7 @@ turn_on_reflection_cam( str_extra_cam )
 	SetSavedDvar( "r_extracam_custom_aspectratio", REFLECTION_WIDTH / REFLECTION_HEIGHT );
 	sm_cam_ent = GetEnt( str_extra_cam, "targetname" );
 
-	level.e_tag_origin = Spawn( "script_model", sm_cam_ent.origin );
+	level.e_tag_origin = spawn( "script_model", sm_cam_ent.origin );
 	level.e_tag_origin SetModel( "tag_origin" );
 	level.e_tag_origin.angles = sm_cam_ent.angles;
 
@@ -622,11 +623,12 @@ turn_off_reflection_cam( str_extra_cam )
 skinner_wave_us_back( ai_mason )
 {
 	autosave_by_name( "house_front" );
-	
+
 	end_scene( "skinner_jane_argue_loop" );
-	
+
 	level thread house_frontyard_obj();
 	level thread run_scene( "house_front_door" );
+
 	run_scene( "skinner_waves_us_back" );
 }
 
@@ -645,9 +647,9 @@ mason_front_gate_nag()
 {
 	level endon( "player_at_front_gate" );
 
-	add_vo_to_nag_group( "front_gate_nag", level.ai_mason_casual, "we_should_make_thi_007" ); // We should make this quick, Woods.
-	add_vo_to_nag_group( "front_gate_nag", level.ai_mason_casual, "for_the_sake_of_sk_008" ); // For the sake of McKnight's marriage if nothing else.
-	add_vo_to_nag_group( "front_gate_nag", level.ai_mason_casual, "maso_come_on_frank_0" ); // Come on, Frank.
+	add_vo_to_nag_group( "front_gate_nag", level.ai_mason_casual, "we_should_make_thi_007" ); // "We should make this quick, Woods."
+	add_vo_to_nag_group( "front_gate_nag", level.ai_mason_casual, "for_the_sake_of_sk_008" ); // "For the sake of McKnight's marriage if nothing else."
+	add_vo_to_nag_group( "front_gate_nag", level.ai_mason_casual, "maso_come_on_frank_0" );   // "Come on, Frank."
 
 	wait 5;
 
@@ -658,7 +660,7 @@ shed_door_nag()
 {
 	level endon( "player_opened_shed" );
 
-	add_vo_to_nag_group( "shed_door_nag", level.ai_skinner_casual, "come_on_woods__w_017" ); // What are you waiting for, Frank?
+	add_vo_to_nag_group( "shed_door_nag", level.ai_skinner_casual, "come_on_woods__w_017" ); // "What are you waiting for, Frank?"
 
 	level thread start_vo_nag_group_flag( "shed_door_nag", "player_opened_shed", 16, 3, false, 3 );
 }
@@ -667,15 +669,15 @@ exit_gate_nag()
 {
 	level endon( "house_player_at_exit" );
 
-	add_vo_to_nag_group( "exit_gate_nag", level.ai_skinner_casual , "hey_woods__what_a_029" ); // Hey Woods, what are you waiting for?
-	add_vo_to_nag_group( "exit_gate_nag", level.ai_skinner_casual, "come_on_030" ); // Come on!
+	add_vo_to_nag_group( "exit_gate_nag", level.ai_skinner_casual , "hey_woods__what_a_029" ); // "Hey Woods, what are you waiting for?"
+	add_vo_to_nag_group( "exit_gate_nag", level.ai_skinner_casual, "come_on_030" );			   // "Come on!"
 
 	level thread start_vo_nag_group_flag( "exit_gate_nag", "house_player_at_exit", 16, 3, false, 3 );
 }
 
 player_woods_dialog()
 {
-	level.player thread say_dialog( "mason_002" ); // Mason.
+	level.player thread say_dialog( "mason_002" ); // "Mason."
 }
 
 paint_spray()
@@ -694,37 +696,37 @@ start_mcknight_arguing_vo()
 {
 	level endon( "kill_argue_vo" );
 
-	McKnight = GetEnt( "skinner", "targetname" );
+	mcknight = GetEnt( "skinner", "targetname" );
 
-	level.McKnight = simple_spawn_single( "skinner" );
-	level.McKnight.animname = "skinner";
-	level.McKnight ForceTeleport( McKnight.origin, McKnight.angles );
+	level.mcknight = simple_spawn_single( "skinner" );
+	level.mcknight.animname = "skinner";
+	level.mcknight ForceTeleport( mcknight.origin, mcknight.angles );
 
-	McKnight_VO = GetEnt( "skinner_vo", "targetname" );
+	mcknight_vo = GetEnt( "skinner_vo", "targetname" );
 
-	McKnight_VO say_dialog( "mckn_honey_you_need_to_0", 0, true );
-	McKnight_VO say_dialog( "jane_i_am_calm_0", 0, true );
+	mcknight_vo say_dialog( "mckn_honey_you_need_to_0", 0, true );
+	mcknight_vo say_dialog( "jane_i_am_calm_0", 0, true );
 
 	flag_wait( "house_follow_mason" );
 
 	wait 3;
 
-	McKnight_VO PlaySound( "fly_pan_house_start" );
+	mcknight_vo PlaySound( "fly_pan_house_start" );
 
-	McKnight_VO say_dialog( "jane_five_years_mark_w_0", 0, true );
+	mcknight_vo say_dialog( "jane_five_years_mark_w_0", 0, true );
 }
 
 mcknight_close_the_door_argument_vo( guy )
 {
-	McKnight_VO = GetEnt( "skinner_vo", "targetname" );
+	mcknight_vo = GetEnt( "skinner_vo", "targetname" );
 
-	McKnight_VO say_dialog( "mckn_family_i_thought_th_0", 0, true );
-	McKnight_VO say_dialog( "jane_it_s_about_everythin_0", 0, true );
+	mcknight_vo say_dialog( "mckn_family_i_thought_th_0", 0, true );
+	mcknight_vo say_dialog( "jane_it_s_about_everythin_0", 0, true );
 
-	McKnight_VO PlaySound( "fly_pan_house_end" );
+	mcknight_vo playSound( "fly_pan_house_end" );
 
-	McKnight_VO say_dialog( "jane_i_need_something_mor_0", 0, true );
-	McKnight_VO say_dialog( "jane_it_s_not_enough_mar_0", 0, true );
+	mcknight_vo say_dialog( "jane_i_need_something_mor_0", 0, true );
+	mcknight_vo say_dialog( "jane_it_s_not_enough_mar_0", 0, true );
 }
 
 #using_animtree( "generic_human" );
@@ -737,9 +739,9 @@ gringo_spraypaint_vo()
 
 	wait ( time - 10 );
 
-	Graffiti_Kids = GetEnt( "m_gringo_graffiti", "targetname" );
-	Graffiti_Kids say_dialog( "tee1_hurry_it_up_0", 3, true );
-	Graffiti_Kids say_dialog( "tee2_okay_okay_0", 2, true );
-	Graffiti_Kids say_dialog( "tee1_that_s_good_come_0", 2, true );
-	Graffiti_Kids say_dialog( "tee2_go_go_go_0", 1, true );
+	kids = GetEnt( "m_gringo_graffiti", "targetname" );
+	kids say_dialog( "tee1_hurry_it_up_0", 3, true );
+	kids say_dialog( "tee2_okay_okay_0", 2, true );
+	kids say_dialog( "tee1_that_s_good_come_0", 2, true );
+	kids say_dialog( "tee2_go_go_go_0", 1, true );
 }

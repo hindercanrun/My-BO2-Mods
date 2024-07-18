@@ -414,6 +414,8 @@ house_event_walk_to_shed()
 	wait 0.05;
 
 	exploder( 1003 );
+
+	// level.player thread say_dialog( "sure_013", 8 );
 }
 
 open_front_gate_clip()
